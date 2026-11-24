@@ -1,11 +1,15 @@
 public class TimeSlot {
-    private int itemId;
     private String start;
     private String end;
+    private int itemId;
     private String className;
 
-    public int getItemId() {
-        return itemId;
+    // Constructor used when creating a TimeSlot manually in code
+    public TimeSlot(String start, String end, int itemId, String className) {
+        this.start = start;
+        this.end = end;
+        this.itemId = itemId;
+        this.className = className;
     }
 
     public String getStart() {
@@ -16,17 +20,17 @@ public class TimeSlot {
         return end;
     }
 
-    public String getClassName() {
-        return className;
+    public int getItemId() {
+        return itemId;
     }
 
-    public boolean isAvailable() {
-        // In LibCal's grid JSON, an empty or null className indicates an unbooked slot.
-        return className == null || className.isEmpty();
+    public boolean isBooked() {
+        return className != null && !className.isBlank();
     }
 
     @Override
     public String toString() {
-        return "RoomID=" + itemId + " | " + start + " -> " + end + " | free=" + isAvailable();
+        String status = isBooked() ? "BOOKED" : "FREE";
+        return "Room " + itemId + " | " + start + " to " + end + " (" + status + ")";
     }
 }
