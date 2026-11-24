@@ -5,14 +5,18 @@ import java.net.http.HttpResponse;
 
 public class Main {
     public static void main(String[] args) {
-        String url = "https://calendar.lib.purdue.edu/spaces";
+        String url = "https://calendar.lib.purdue.edu/spaces/availability/grid";
+        String formBody = "lid=13748&gid=28429&eid=-1&seat=0&seatId=0&zone=0"
+                + "&start=2026-11-24&end=2026-12-01&pageIndex=0&pageSize=18";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
-                .GET()
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Referer", "https://calendar.lib.purdue.edu/spaces")
+                .POST(HttpRequest.BodyPublishers.ofString(formBody))
                 .build();
-
+                
         try {
             /** 
             * Sends a request to Purdue server and decodes the response and reads as a Java String
