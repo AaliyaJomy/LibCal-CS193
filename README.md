@@ -6,15 +6,17 @@ A simple tool for Purdue students to instantly check open study rooms at WALC, H
 
 Finding an open collaborative study room across Purdue’s campus requires manually navigating multiple disjointed LibCal booking portals for libraries like WALC, Hicks, and HSSE. This creates unnecessary friction between classes when students need quick spaces to meet or study. This project builds a centralized availability aggregator tool that queries and standardizes room schedules into a single unified interface to eliminate tedious tab-switching.
 
-## How It Works (MVP Scope)
+## How It Works
 
-The minimum viable product (MVP) works as a lightweight command-line tool that:
-1. Sends HTTP GET requests directly to Purdue's LibCal API backend endpoints (`calendar.lib.purdue.edu/spaces`).
-2. Retrieves raw JSON slot schedules for target study rooms in WALC, Hicks, and HSSE.
-3. Parses the raw JSON response into structured Java objects using a JSON library.
-4. Filters out unavailable blocks to identify open rooms.
-5. Formats and renders the final room availability into a clean, human-readable terminal table.
+The CLI tool queries Purdue's LibCal grid endpoint and formats available rooms in the terminal:
 
+1. Sends HTTP `POST` requests with form parameters (`lid`, `gid`, date range, pagination) to `https://calendar.lib.purdue.edu/spaces/availability/grid`.
+2. Retrieves raw JSON slot data for target study rooms in WALC, Hicks, and HSSE.
+3. Parses slot fields (`start`, `end`, `itemId`, `className`) manually in Java into `TimeSlot` objects (`LibCalParser`).
+4. Filters slots to identify open rooms across the target buildings.
+5. Renders open room availability in a formatted terminal table.
+
+![System Architecture Diagram](System_Diagram.drawio.png)
 
 ## Future Plans
 
@@ -25,7 +27,60 @@ The minimum viable product (MVP) works as a lightweight command-line tool that:
 
 ## Tech Stack
 
-- **Language:** Java
-- **Networking:** Built-in `java.net.http.HttpClient` for executing HTTP requests
-- **JSON Parsing:** Jackson / Gson library
-- **Data Source:** Purdue Libraries LibCal booking backend (`calendar.lib.purdue.edu/spaces`)
+- **Language:** Java (JDK 17+ / `java.net.http.HttpClient`)
+- **Libraries / Dependencies:** None (standard Java library only; manual `String` parsing)
+- **External Tools / APIs:** Purdue Libraries LibCal backend (`calendar.lib.purdue.edu/spaces`)
+- **Data Storage:** None (fetches live availability on demand without local file or database storage)
+
+## Setup and Running
+
+### Prerequisites
+- **Java (JDK 17 or newer)** installed and available on your `PATH` (`java -version`, `javac -version`)
+- **Git** installed (`git --version`)
+- Internet access to reach `calendar.lib.purdue.edu`
+
+### Clone, Compile, and Run
+
+```bash
+git clone https://github.com/AaliyaJomy/LibCal-CS193
+cd LibCal-availability-checker-CS193-final
+mkdir -p out
+javac -d out src/*.java
+java -cp out Main
+```
+
+## Example Input and Output
+
+Example Input: 
+Target buildings: WALC, Hicks, HSSE
+
+Example Output:
+```bash
+Status: 200
+Parsed time slots: 48
+
+Building | Room ID | Start               | End                 | Status
+---------+---------+---------------------+---------------------+-------
+WALC     | 107410  | 2026-11-24 17:00:00 | 2026-11-24 17:30:00 | FREE
+WALC     | 107412  | 2026-11-24 17:30:00 | 2026-11-24 18:00:00 | FREE
+```
+
+## Roadmap
+- [x] Inspect LibCal network traffic and verify POST availability endpoint
+
+- [x] Fetch live JSON slot data using HttpClient
+
+- [x] Parse LibCal JSON manually into TimeSlot objects
+
+- [ ] Filter available rooms across WALC, Hicks, and HSSE
+
+- [ ] Display room availability in a CLI table
+
+- [ ] Filter by custom user-selected date or time window
+
+- [ ] Search and compare rooms by capacity or features
+
+- [ ] Add auto-refresh mode in the CLI
+
+## Demo
+Watch the project walkthrough here:
