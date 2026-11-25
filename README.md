@@ -1,17 +1,17 @@
 # LibCal Availability Checker
 
-A simple tool for Purdue students to instantly check open study rooms at WALC, Hicks, and HSSE. Instead of browsing multiple websites, it displays a clean, organized list of available rooms on your screen.
+A simple tool for Purdue students to instantly check open study rooms at WALC and HSSE. Instead of browsing multiple websites, it displays a clean, organized list of available rooms on your screen.
 
 ## The Problem
 
-Finding an open collaborative study room across Purdue’s campus requires manually navigating multiple disjointed LibCal booking portals for libraries like WALC, Hicks, and HSSE. This creates unnecessary friction between classes when students need quick spaces to meet or study. This project builds a centralized availability aggregator tool that queries and standardizes room schedules into a single unified interface to eliminate tedious tab-switching.
+Finding an open collaborative study room across Purdue’s campus requires manually navigating multiple disjointed LibCal booking portals for libraries like WALC and HSSE. This creates unnecessary friction between classes when students need quick spaces to meet or study. This project builds a centralized availability aggregator tool that queries and standardizes room schedules into a single unified interface to eliminate tedious tab-switching.
 
 ## How It Works
 
 The CLI tool queries Purdue's LibCal grid endpoint and formats available rooms in the terminal:
 
 1. Sends HTTP `POST` requests with form parameters (`lid`, `gid`, date range, pagination) to `https://calendar.lib.purdue.edu/spaces/availability/grid`.
-2. Retrieves raw JSON slot data for target study rooms in WALC, Hicks, and HSSE.
+2. Retrieves raw JSON slot data for target study rooms in WALC and HSSE.
 3. Parses slot fields (`start`, `end`, `itemId`, `className`) manually in Java into `TimeSlot` objects (`LibCalParser`).
 4. Filters slots to identify open rooms across the target buildings.
 5. Renders open room availability in a formatted terminal table.
@@ -52,7 +52,7 @@ java -cp out Main
 ## Example Input and Output
 
 Example Input: 
-Target buildings: WALC, Hicks, HSSE
+Target buildings: WALC, HSSE
 
 Example Output:
 ```bash
@@ -72,15 +72,11 @@ WALC     | 107412  | 2026-11-24 17:30:00 | 2026-11-24 18:00:00 | FREE
 
 - [x] Parse LibCal JSON manually into TimeSlot objects
 
-- [ ] Filter available rooms across WALC, Hicks, and HSSE
+- [x] Filter available rooms across WALC and HSSE
 
 - [ ] Display room availability in a CLI table
 
-- [ ] Filter by custom user-selected date or time window
-
-- [ ] Search and compare rooms by capacity or features
-
-- [ ] Add auto-refresh mode in the CLI
+- [ ] Filter by custom user-selected date or time window (Schedule feature)
 
 ## Demo
 Watch the project walkthrough here:
