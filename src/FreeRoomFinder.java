@@ -2,13 +2,22 @@ import java.util.ArrayList;
 
 public class FreeRoomFinder {
 
-    public ArrayList<TimeSlot> getFreeSlotsNow(
-            ArrayList<TimeSlot> allSlots,
+public ArrayList<TimeSlot> getFreeSlotsByUserInput(            ArrayList<TimeSlot> allSlots,
             RoomList rooms,
-            String currentDateTime) {
+            String userInput) {
 
         ArrayList<TimeSlot> result = new ArrayList<>();
-        String normalizedNow = normalize(currentDateTime);
+        if (userInput == null || userInput.isBlank()) {
+            return result;
+        }
+
+        String cleaned = normalize(userInput);
+        boolean isDateOnly = (cleaned.length() == 10); // "YYYY-MM-DD"
+
+        // If user typed "YYYY-MM-DD HH:mm", append ":00" so string comparison matches "YYYY-MM-DD HH:mm:ss"
+        if (!isDateOnly && cleaned.length() == 16) {
+            cleaned = cleaned + ":00";
+        }
 
         for (int i = 0; i < allSlots.size(); i++) {
             TimeSlot slot = allSlots.get(i);
@@ -18,26 +27,35 @@ public class FreeRoomFinder {
                 continue;
             }
 
-            // 2. Must be a collaborative room in WALC, Hicks, or HSSE
+            // 2. Must be in WALC, Hicks, or HSSE
             int roomIndex = rooms.findIndexByItemId(slot.getItemId());
             if (!rooms.isTargetBuilding(roomIndex)) {
                 continue;
             }
 
-            // 3. Must cover current time: start <= now < end
             String start = normalize(slot.getStart());
             String end = normalize(slot.getEnd());
-            if (start != null && end != null
-                    && start.compareTo(normalizedNow) <= 0
-                    && normalizedNow.compareTo(end) < 0) {
-                result.add(slot);
+            if (start == null || end == null) {
+                continue;
+            }
+
+            // 3A. Date-only mode: any open slot starting on that YYYY-MM-DD date
+            if (isDateOnly) {
+                if (start.startsWith(cleaned)) {
+                    result.add(slot);
+                }
+            }
+            // 3B. Date + time mode: open slot covering that exact timestamp (start <= target < end)
+            else {
+                if (start.compareTo(cleaned) <= 0 && cleaned.compareTo(end) < 0) {
+                    result.add(slot);
+                }
             }
         }
 
         return result;
     }
 
-    // Avoid printing the same room twice if multiple overlapping slots match
     public boolean alreadyAddedRoom(ArrayList<TimeSlot> chosenSlots, int itemId) {
         for (int i = 0; i < chosenSlots.size(); i++) {
             if (chosenSlots.get(i).getItemId() == itemId) {
@@ -47,10 +65,17 @@ public class FreeRoomFinder {
         return false;
     }
 
-    private String normalize(String dt) {
-        if (dt == null) {
+    private String normalize(String data) {
+        if (data == null) {
             return null;
         }
-        return dt.trim().replace('T', ' ');
+        return data.trim().replace('T', ' ');
+    }
+
+    private String padSeconds(String data) {
+        if (data != null && data.length() == 16) {
+            return data + ":00";
+        }
+        return data;
     }
 }
