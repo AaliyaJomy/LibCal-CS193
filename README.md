@@ -20,9 +20,8 @@ The CLI tool queries Purdue's LibCal grid endpoint and formats available rooms i
 
 ## Future Plans
 
-1. Allow a filtering feature for users based on specific date or time window more than just current availability.
-2. Allow users to search and compare by room availability.
-3. Auto refresh to display the most up to date availability changes.
+1. Allow users to search and compare by room availability.
+2. Auto refresh to display the most up to date availability changes.
 
 
 ## Tech Stack
@@ -43,7 +42,7 @@ The CLI tool queries Purdue's LibCal grid endpoint and formats available rooms i
 
 ```bash
 git clone https://github.com/AaliyaJomy/LibCal-CS193
-cd LibCal-availability-checker-CS193-final
+cd LibCal-CS193
 mkdir -p out
 javac -d out src/*.java
 java -cp out Main
@@ -52,17 +51,27 @@ java -cp out Main
 ## Example Input and Output
 
 Example Input: 
-Target buildings: WALC, HSSE
+```bash
+Enter a date (YYYY-MM-DD) or date + time (YYYY-MM-DD HH:mm), or press Enter for Current Availability:
+Keypress "Enter"
+```
+```bash
+Enter a date (YYYY-MM-DD) or date + time (YYYY-MM-DD HH:mm), or press Enter for Current Availability:
+2026-12-16
+```
+```bash
+Enter a date (YYYY-MM-DD) or date + time (YYYY-MM-DD HH:mm), or press Enter for Current Availability:
+2026-12-17 08:00
+```
 
 Example Output:
 ```bash
 Status: 200
-Parsed time slots: 48
+Parsed time slots: 33
 
 Building | Room ID | Start               | End                 | Status
 ---------+---------+---------------------+---------------------+-------
-WALC     | 107410  | 2026-11-24 17:00:00 | 2026-11-24 17:30:00 | FREE
-WALC     | 107412  | 2026-11-24 17:30:00 | 2026-11-24 18:00:00 | FREE
+WALC     | 107410  | 2026-12-17 08:00:00 | 2026-12-17 08:30:00 | FREE
 ```
 
 ## Roadmap
@@ -74,7 +83,7 @@ WALC     | 107412  | 2026-11-24 17:30:00 | 2026-11-24 18:00:00 | FREE
 
 - [x] Filter available rooms across WALC and HSSE
 
-- [ ] Display room availability in a CLI table
+- [x] Display room availability in a CLI table
 
 - [x] Filter by custom user-selected date or time window (Schedule feature)
 
