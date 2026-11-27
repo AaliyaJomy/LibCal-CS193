@@ -11,7 +11,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter a date (YYYY-MM-DD) or date + time (YYYY-MM-DD HH:mm), or press Enter for now:");
+        System.out.println("Enter a date (YYYY-MM-DD) or date + time (YYYY-MM-DD HH:mm), or press Enter for Current Availability:");
         String userInput = scanner.nextLine().trim();
 
         if (userInput.isEmpty()) {
@@ -47,43 +47,46 @@ public class Main {
             if (response.statusCode() == 200) {
                 LibCalParser parser = new LibCalParser();
                 ArrayList<TimeSlot> allSlots = parser.parseSlots(response.body());
+                System.out.println("Parsed time slots: " + allSlots.size());
+                System.out.println();
 
                 RoomList rooms = new RoomList();
                 FreeRoomFinder finder = new FreeRoomFinder();
 
                 ArrayList<TimeSlot> matches = finder.getFreeSlotsByUserInput(allSlots, rooms, userInput);
 
+                ArrayList<TimeSlot> rowsToPrint = new ArrayList<>();
                 if (isDateOnly) {
-                    System.out.println("Open slots on " + userInput + ": " + matches.size());
-                    for (int i = 0; i < matches.size(); i++) {
-                        TimeSlot slot = matches.get(i);
-                        int idx = rooms.findIndexByItemId(slot.getItemId());
-                        System.out.println("- [" + rooms.getBuilding(idx) + "] "
-                                + rooms.getRoomName(idx)
-                                + " (ID " + slot.getItemId() + "): "
-                                + slot.getStart() + " to " + slot.getEnd());
-                    }
+                    rowsToPrint = matches;
                 } else {
-                    ArrayList<TimeSlot> uniqueFreeRooms = new ArrayList<>();
                     for (int i = 0; i < matches.size(); i++) {
                         TimeSlot slot = matches.get(i);
-                        if (!finder.alreadyAddedRoom(uniqueFreeRooms, slot.getItemId())) {
-                            uniqueFreeRooms.add(slot);
+                        if (!finder.alreadyAddedRoom(rowsToPrint, slot.getItemId())) {
+                            rowsToPrint.add(slot);
                         }
                     }
+                }
 
-                    System.out.println("Free rooms at " + userInput + ": " + uniqueFreeRooms.size());
-                    for (int i = 0; i < uniqueFreeRooms.size(); i++) {
-                        TimeSlot slot = uniqueFreeRooms.get(i);
-                        int idx = rooms.findIndexByItemId(slot.getItemId());
-                        System.out.println("- [" + rooms.getBuilding(idx) + "] "
-                                + rooms.getRoomName(idx)
-                                + " (ID " + slot.getItemId() + ") free until " + slot.getEnd());
-                    }
+                System.out.printf("%-8s | %-7s | %-19s | %-19s | %-6s%n",
+                        "Building", "Room ID", "Start", "End", "Status");
+                System.out.println("---------+---------+---------------------+---------------------+-------");
+
+                for (int i = 0; i < rowsToPrint.size(); i++) {
+                    TimeSlot slot = rowsToPrint.get(i);
+                    int idx = rooms.findIndexByItemId(slot.getItemId());
+                    String building = (idx >= 0) ? rooms.getBuilding(idx) : "UNKNOWN";
+                    String status = slot.isBooked() ? "BOOKED" : "FREE";
+
+                    System.out.printf("%-8s | %-7d | %-19s | %-19s | %-6s%n",
+                            building,
+                            slot.getItemId(),
+                            slot.getStart(),
+                            slot.getEnd(),
+                            status);
                 }
             }
         } catch (Exception e) {
-            System.out.println("Could not fetch data: " + e.getMessage());
+            System.out.println("Could not fetch data: " + e);
         }
     }
 }

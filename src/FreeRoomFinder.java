@@ -2,7 +2,8 @@ import java.util.ArrayList;
 
 public class FreeRoomFinder {
 
-public ArrayList<TimeSlot> getFreeSlotsByUserInput(            ArrayList<TimeSlot> allSlots,
+public ArrayList<TimeSlot> getFreeSlotsByUserInput(            
+            ArrayList<TimeSlot> allSlots,
             RoomList rooms,
             String userInput) {
 
@@ -27,7 +28,7 @@ public ArrayList<TimeSlot> getFreeSlotsByUserInput(            ArrayList<TimeSlo
                 continue;
             }
 
-            // 2. Must be in WALC, Hicks, or HSSE
+            // 2. Must be in WALC or HSSE
             int roomIndex = rooms.findIndexByItemId(slot.getItemId());
             if (!rooms.isTargetBuilding(roomIndex)) {
                 continue;

@@ -4,7 +4,6 @@ public class TimeSlot {
     private int itemId;
     private String className;
 
-    // Constructor used when creating a TimeSlot manually in code
     public TimeSlot(String start, String end, int itemId, String className) {
         this.start = start;
         this.end = end;

@@ -37,7 +37,6 @@ public class RoomList {
         }
         String b = buildings.get(index);
         return "WALC".equalsIgnoreCase(b)
-                || "Hicks".equalsIgnoreCase(b)
                 || "HSSE".equalsIgnoreCase(b);
     }
 
