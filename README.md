@@ -76,7 +76,7 @@ WALC     | 107412  | 2026-11-24 17:30:00 | 2026-11-24 18:00:00 | FREE
 
 - [ ] Display room availability in a CLI table
 
-- [ ] Filter by custom user-selected date or time window (Schedule feature)
+- [x] Filter by custom user-selected date or time window (Schedule feature)
 
 ## Demo
 Watch the project walkthrough here:
