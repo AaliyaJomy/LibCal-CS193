@@ -29,24 +29,50 @@ public class Main {
         boolean isDateOnly = (userInput.length() == 10);
 
         String url = "https://calendar.lib.purdue.edu/spaces/availability/grid";
-        String formBody = "lid=13748&gid=28429&eid=-1&seat=0&seatId=0&zone=0"
+
+        String walcBody = "lid=13748&gid=29397&eid=-1&seat=0&seatId=0&zone=0"
+                + "&start=" + queryDate + "&end=" + nextDate + "&pageIndex=0&pageSize=18";
+
+        String hsseBody = "lid=9178&gid=28425&eid=-1&seat=0&seatId=0&zone=0"
                 + "&start=" + queryDate + "&end=" + nextDate + "&pageIndex=0&pageSize=18";
 
         HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
+        HttpRequest walcRequest = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("Referer", "https://calendar.lib.purdue.edu/spaces")
-                .POST(HttpRequest.BodyPublishers.ofString(formBody))
+                .POST(HttpRequest.BodyPublishers.ofString(walcBody))
+                .build();
+
+        HttpRequest hsseRequest = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Referer", "https://calendar.lib.purdue.edu/spaces")
+                .POST(HttpRequest.BodyPublishers.ofString(hsseBody))
                 .build();
 
         try {
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("Status: " + response.statusCode());
+            HttpResponse<String> walcResponse = client.send(walcRequest, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> hsseResponse = client.send(hsseRequest, HttpResponse.BodyHandlers.ofString());
 
-            if (response.statusCode() == 200) {
+            if (walcResponse.statusCode() == 200 && hsseResponse.statusCode() == 200) {
+                System.out.println("Status: 200");
+            } else {
+                System.out.println("Status: WALC=" + walcResponse.statusCode()
+                        + ", HSSE=" + hsseResponse.statusCode());
+            }
+
+            if (walcResponse.statusCode() == 200 || hsseResponse.statusCode() == 200) {
                 LibCalParser parser = new LibCalParser();
-                ArrayList<TimeSlot> allSlots = parser.parseSlots(response.body());
+                ArrayList<TimeSlot> allSlots = new ArrayList<>();
+
+                if (walcResponse.statusCode() == 200) {
+                    allSlots.addAll(parser.parseSlots(walcResponse.body()));
+                }
+                if (hsseResponse.statusCode() == 200) {
+                    allSlots.addAll(parser.parseSlots(hsseResponse.body()));
+                }
+
                 System.out.println("Parsed time slots: " + allSlots.size());
                 System.out.println();
 
@@ -67,19 +93,20 @@ public class Main {
                     }
                 }
 
-                System.out.printf("%-8s | %-7s | %-19s | %-19s | %-6s%n",
-                        "Building", "Room ID", "Start", "End", "Status");
+                System.out.printf("%-8s | %-10s | %-19s | %-19s | %-6s%n",
+                        "Building", "Room", "Start", "End", "Status");
                 System.out.println("---------+---------+---------------------+---------------------+-------");
 
                 for (int i = 0; i < rowsToPrint.size(); i++) {
                     TimeSlot slot = rowsToPrint.get(i);
                     int idx = rooms.findIndexByItemId(slot.getItemId());
                     String building = (idx >= 0) ? rooms.getBuilding(idx) : "UNKNOWN";
+                    String room = (idx >= 0) ? rooms.getRoomName(idx) : String.valueOf(slot.getItemId());
                     String status = slot.isBooked() ? "BOOKED" : "FREE";
 
-                    System.out.printf("%-8s | %-7d | %-19s | %-19s | %-6s%n",
+                    System.out.printf("%-8s | %-10s | %-19s | %-19s | %-6s%n",
                             building,
-                            slot.getItemId(),
+                            room,
                             slot.getStart(),
                             slot.getEnd(),
                             status);
