@@ -66,12 +66,18 @@ Enter a date (YYYY-MM-DD) or date + time (YYYY-MM-DD HH:mm), or press Enter for 
 
 Example Output:
 ```bash
+PS C:\Users\aaliy\LibCal-CS193> java  -cp out Main
+Enter a date (YYYY-MM-DD) or date + time (YYYY-MM-DD HH:mm), or press Enter for Current Availability:
+2026-12-17 08:00
 Status: 200
-Parsed time slots: 33
+Parsed time slots: 192
 
-Building | Room ID | Start               | End                 | Status
+Building | Room       | Start               | End                 | Status
 ---------+---------+---------------------+---------------------+-------
-WALC     | 107410  | 2026-12-17 08:00:00 | 2026-12-17 08:30:00 | FREE
+WALC     | WALC 2020  | 2026-12-17 08:00:00 | 2026-12-17 08:30:00 | FREE
+WALC     | WALC 3060  | 2026-12-17 08:00:00 | 2026-12-17 08:30:00 | FREE
+WALC     | WALC 3068  | 2026-12-17 08:00:00 | 2026-12-17 08:30:00 | FREE
+WALC     | WALC 3076  | 2026-12-17 08:00:00 | 2026-12-17 08:30:00 | FREE
 ```
 
 ## Roadmap
@@ -86,6 +92,8 @@ WALC     | 107410  | 2026-12-17 08:00:00 | 2026-12-17 08:30:00 | FREE
 - [x] Display room availability in a CLI table
 
 - [x] Filter by custom user-selected date or time window (Schedule feature)
+    
+- [x] Debug: Fix parsing issue for HSSE rooms and invalid format error message display
 
 ## Demo
 Watch the project walkthrough here:
